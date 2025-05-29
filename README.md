@@ -1,2 +1,2 @@
 # Pashield_database
-Pashield için docker da çalışacak bir veri tabanı
+Pashield için docker da çalışacak bir veri tabanı ve api
