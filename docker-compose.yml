@@ -12,8 +12,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "5433:5432"
+    expose:
+      - ${POSTGRES_PORT}
     volumes:
       - pashield_data:/var/lib/postgresql/data
       - ./postgre/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
