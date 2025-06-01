@@ -30,7 +30,6 @@ class PasswordBase(BaseModel):
     hesap_yeri: str
     username: str
     password: str
-    icon_name: Optional[str] = None
 
 class PasswordCreate(PasswordBase):
     pass

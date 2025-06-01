@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS passwords (
     hesap_yeri TEXT NOT NULL,
     username TEXT NOT NULL,
     password TEXT NOT NULL, -- AES gibi bir algoritma ile şifrelenmiş olarak saklanmalı
-    icon_name TEXT
 );
 
 -- Gerekirse index'ler tanımlanabilir

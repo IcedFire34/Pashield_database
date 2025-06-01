@@ -21,4 +21,3 @@ class Password(Base):
     hesap_yeri = Column(String, nullable=False)
     username = Column(String, nullable=False)
     password = Column(String, nullable=False)
-    icon_name = Column(String)
