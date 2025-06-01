@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS passwords (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     hesap_yeri TEXT NOT NULL,
     username TEXT NOT NULL,
-    password TEXT NOT NULL, -- AES gibi bir algoritma ile şifrelenmiş olarak saklanmalı
+    password TEXT NOT NULL
 );
 
 -- Gerekirse index'ler tanımlanabilir
