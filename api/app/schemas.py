@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import Optional
 
@@ -29,7 +29,7 @@ class TokenData(BaseModel):
 class PasswordBase(BaseModel):
     hesap_yeri: str
     username: str
-    password: str
+    password: str = Field(..., description="Encrypted password")
 
 class PasswordCreate(PasswordBase):
     pass
@@ -39,5 +39,4 @@ class Password(PasswordBase):
     user_id: int
 
     class Config:
-        from_attributes = True
-        orm_mode = True
+        from_attributes = True  # This enables ORM mode

@@ -1,33 +1,31 @@
+# app/auth.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from . import schemas, crud
+from . import schemas
 from .database import get_db
 from sqlalchemy.orm import Session
 from .config import settings
+from .crud import get_user_by_email  # crud modülünden doğrudan fonksiyon import edildi
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
-
 
 def get_password_hash(password: str):
     return pwd_context.hash(password)
 
-
 def authenticate_user(db: Session, email: str, password: str):
-    user = crud.get_user_by_email(db, email=email)
+    user = get_user_by_email(db, email=email)  # doğrudan import edilen fonksiyon kullanıldı
     if not user:
         return False
     if not verify_password(password, user.password):
         return False
     return user
-
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -38,7 +36,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
-
 
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -55,7 +52,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     except JWTError:
         raise credentials_exception
 
-    user = crud.get_user_by_email(db, email=token_data.email)
+    user = get_user_by_email(db, email=token_data.email)  # doğrudan import edilen fonksiyon kullanıldı
     if user is None:
         raise credentials_exception
     return user

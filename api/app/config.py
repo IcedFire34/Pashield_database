@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = os.getenv("ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    ENCRYPTION_KEY: str = os.getenv("ENCRYPTION_KEY")  # 32 karakterli bir anahtar (AES-256 için)
 
     class Config:
         env_file = ".env"
