@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -115,3 +115,37 @@ def delete_password(
     if db_password is None:
         raise HTTPException(status_code=404, detail="Password not found")
     return db_password
+
+@app.delete("/users/me",status_code=status.HTTP_204_NO_CONTENT)
+def delete_current_user(
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(get_current_user)
+):
+    """
+    Delete the currently authenticated user and all associated passwords.
+    Requires valid JWT token.
+    """
+    if not crud.delete_user(db, user_id=current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.delete("/passwords/",status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_all_passwords(
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(get_current_user)
+):
+    """
+    Delete all passwords associated with the current user.
+    Requires valid JWT token.
+    """
+    deleted_count = crud.delete_all_user_passwords(db, user_id=current_user.id)
+    if deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No passwords found to delete"
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

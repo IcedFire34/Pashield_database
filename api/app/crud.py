@@ -57,7 +57,7 @@ def get_passwords(db: Session, user_id: int, skip: int = 0, limit: int = 100):
             "id": db_password.id,
             "user_id": db_password.user_id,
             "hesap_yeri": db_password.hesap_yeri,
-            "username": db_password.username,
+            "username": decrypt_data(db_password.username),
             "password": decrypt_data(db_password.password)  # Her zaman çöz
         }
         passwords.append(schemas.Password(**password_dict))
@@ -77,7 +77,7 @@ def get_password(db: Session, password_id: int, user_id: int, decrypt: bool = Fa
         "id": db_password.id,
         "user_id": db_password.user_id,
         "hesap_yeri": db_password.hesap_yeri,
-        "username": db_password.username,
+        "username": decrypt_data(db_password.username) if decrypt else db_password.username,
         "password": decrypt_data(db_password.password) if decrypt else db_password.password
     }
     return schemas.Password(**password_dict)
@@ -85,10 +85,11 @@ def get_password(db: Session, password_id: int, user_id: int, decrypt: bool = Fa
 
 def create_user_password(db: Session, password: schemas.PasswordCreate, user_id: int):
     encrypted_password = encrypt_data(password.password)
+    encrypted_username = encrypt_data(password.username)  # Username şifreleniyor
     db_password = models.Password(
         user_id=user_id,
         hesap_yeri=password.hesap_yeri,
-        username=password.username,
+        username=encrypted_username,
         password=encrypted_password
     )
     db.add(db_password)
@@ -117,8 +118,9 @@ def update_password(db: Session, password_id: int, password: schemas.PasswordCre
 
     # Güncelleme yap
     encrypted_password = encrypt_data(password.password)
+    encrypted_username = encrypt_data(password.username)
     db_password.hesap_yeri = password.hesap_yeri
-    db_password.username = password.username
+    db_password.username = encrypted_username
     db_password.password = encrypted_password
 
     db.commit()
@@ -159,3 +161,20 @@ def delete_password(db: Session, password_id: int, user_id: int):
 
     # Silinen kaydı Pydantic modeline çevirerek dön
     return schemas.Password(**password_data)
+
+def delete_user(db: Session, user_id: int):
+    # Önce kullanıcının tüm passwordlerini sil
+    db.query(models.Password).filter(models.Password.user_id == user_id).delete()
+
+    # Sonra kullanıcıyı sil
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        db.delete(db_user)
+        db.commit()
+        return True
+    return False
+
+def delete_all_user_passwords(db: Session, user_id: int):
+    deleted_count = db.query(models.Password).filter(models.Password.user_id == user_id).delete()
+    db.commit()
+    return deleted_count

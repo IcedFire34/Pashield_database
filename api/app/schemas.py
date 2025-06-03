@@ -28,7 +28,7 @@ class TokenData(BaseModel):
 
 class PasswordBase(BaseModel):
     hesap_yeri: str
-    username: str
+    username: str = Field(..., description="Encrypted username")
     password: str = Field(..., description="Encrypted password")
 
 class PasswordCreate(PasswordBase):
