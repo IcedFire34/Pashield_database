@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/", status_code=status.HTTP_200_OK)
 def root():
     return {"message": "Pashield API çalışıyor!", "status": "OK"}
 
