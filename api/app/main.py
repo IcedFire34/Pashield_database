@@ -25,6 +25,10 @@ app.add_middleware(
 def root():
     return {"message": "Pashield API çalışıyor!", "status": "OK"}
 
+@app.head("/")
+def root_head():
+    return Response(status_code=status.HTTP_200_OK)
+
 @app.post("/register", response_model=schemas.User)
 async def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     try:
