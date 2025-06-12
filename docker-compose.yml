@@ -30,6 +30,7 @@ services:
       - db
     ports:
       - "127.0.0.1:8083:8080"
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "/var/www/html"]
     networks:
       - pashield_network
 
